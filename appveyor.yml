@@ -1,0 +1,110 @@
+image:
+  - Visual Studio 2019
+environment:
+
+  global:
+      # Remember to edit .travis.yml too
+      BUILD_COMMIT: 5f67bea9e262b8424de4b0a147853724555b098e
+      ANACONDA_ORG: ofajardo
+      # ANCONDA_TOKEN must be set in appveyor project settings
+
+  matrix:
+    - PYTHON_VERSION: "3.7"
+    #CONDAPATH: 'C:\Miniconda37'
+    - PYTHON_VERSION: "3.8"
+    #CONDAPATH: 'C:\Miniconda38'
+    - PYTHON_VERSION: "3.9"
+    - PYTHON_VERSION: "3.10"
+ 
+platform:
+  - x64
+#  - x86
+
+matrix:
+  exclude:
+    - platform: x86
+      PYTHON_VERSION: "3.9"
+    - platform: x86
+      PYTHON_VERSION: "3.10"
+
+install:
+  - git submodule update --init
+  - cd pyreadstat
+  - git fetch origin
+  - git checkout %BUILD_COMMIT%
+  - cd ..
+    # clone and build external libraries
+    # libiconv
+  - git clone https://github.com/kiyolee/libiconv-win-build.git
+  - cd libiconv-win-build
+  - git checkout e6a1bcfe6a3a6e75e351e096286d14c14b5ef79b
+  - cd ..
+  - msbuild.exe libiconv-win-build/build-VS2019-MT/libiconv.sln /property:Configuration=Release;Platform=X64
+  - copy libiconv-win-build\\include\\iconv.h pyreadstat\\win_libs\\64bit                                   
+  - copy libiconv-win-build\\build-VS2019-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
+  # libz
+  - git clone https://github.com/kiyolee/zlib-win-build.git
+  - cd zlib-win-build
+  - git checkout 48e49de94a66b0e3cecee38530993bd0c1de5bfa
+  - cd ..
+  - msbuild.exe zlib-win-build/build-VS2019-MT/zlib.sln /property:Configuration=Release;Platform=X64
+  - copy zlib-win-build\\zlib.h pyreadstat\\win_libs\\64bit                                   
+  - copy zlib-win-build\\zconf.h pyreadstat\\win_libs\\64bit                                   
+  - copy zlib-win-build\\build-VS2019-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
+
+  # activate conda base environment
+  #- if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
+  # use conda37 for everything and later create a conda env with version
+  - set CONDAPATH=C:\Miniconda38
+  - if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
+  - call %CONDAPATH%\Scripts\activate
+  # prepare environment with conda
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # create an environment with the appropiate python
+  - conda create -y -n currentenv python=%PYTHON_VERSION%
+  - conda activate currentenv
+  # Check that we have the expected version and architecture for Python
+  - python --version
+  - python -c "import struct; print(struct.calcsize('P') * 8)"
+  # install necessary packages
+  #- conda install -q setuptools pip cython wheel
+  - pip install cython
+  #- conda install -c conda-forge libpython
+  # mingw64 toolchain to compile python extensions
+  #- conda install -q -c msys2 m2w64-toolchain
+  
+build_script:
+  - cd pyreadstat
+  # Build and install the wheel
+  # clean dist dir just in case there is something in there
+  #- del /Q dist\*.*
+  # set mingw32 as compiler and produce the wheel
+  #- python.exe setup.py config --compiler=mingw32
+  - python.exe setup.py bdist_wheel 
+  - ps: "ls dist"
+  - ps: |
+      # Upload artifact to Appveyor immediately after build
+      ls dist -r | Foreach-Object {
+          appveyor PushArtifact $_.FullName
+          pip install $_.FullName
+      }
+  - pip install --pre --no-index --find-links dist/ pyreadstat
+  - pip install pandas
+  # do not install pandas with conda because too old version for py35
+
+test_script:
+  python.exe tests\test_basic.py
+
+after_test:
+  # If tests are successful, create binary packages for the project.
+  - dir dist
+
+on_success:
+  - cd dist
+  - dir
+  #- pip install git+https://github.com/Anaconda-Platform/anaconda-client
+  - conda deactivate
+  - conda install -q -y anaconda-client
+  - anaconda -t %ANACONDA_TOKEN% upload --force -u %ANACONDA_ORG% *.whl
+

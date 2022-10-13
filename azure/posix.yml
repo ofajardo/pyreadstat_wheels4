@@ -1,0 +1,106 @@
+parameters:
+  name: ""
+  vmImage: ""
+  matrix: []
+
+jobs:
+  - job: ${{ parameters.name }}
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    variables:
+      REPO_DIR: "pyreadstat"
+      PLAT: "x86_64"
+      CYTHON_BUILD_DEP: "cython==0.29.24"
+      NIGHTLY_BUILD_COMMIT: "master"
+      TEST_DEPENDS: "pandas"
+      JUNITXML: "test-data.xml"
+      TEST_DIR: "tmp_for_test"
+    strategy:
+      matrix:
+        ${{ insert }}: ${{ parameters.matrix }}
+
+    steps:
+      - checkout: self
+        submodules: true
+
+      - script: docker run --rm --privileged hypriot/qemu-register
+        displayName: "Enabling Qemu"
+        condition: eq(variables['PLAT'], 'aarch64')
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: $(AZURE_PYTHON_VERSION)
+        displayName: Set python version from AZURE
+        condition: ne( coalesce (variables['AZURE_PYTHON_VERSION'], 'NONE'), 'NONE')
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: $(MB_PYTHON_VERSION)
+        displayName: Set python version from MB
+        condition: eq( coalesce (variables['AZURE_PYTHON_VERSION'], 'NONE'), 'NONE')
+
+      - bash: |
+          set -e
+          echo "Building pyreadstat@$BUILD_COMMIT"
+          echo "##vso[task.setvariable variable=BUILD_COMMIT]$BUILD_COMMIT"
+
+          # Platform variables used in multibuild scripts
+          if [ `uname` == 'Darwin' ]; then
+            echo "##vso[task.setvariable variable=TRAVIS_OS_NAME]osx"
+          else
+            echo "##vso[task.setvariable variable=TRAVIS_OS_NAME]linux"
+          fi
+
+          # Store original Python path to be able to create test_venv pointing
+          # to same Python version.
+          PYTHON_EXE=`which python`
+          echo "##vso[task.setvariable variable=PYTHON_EXE]$PYTHON_EXE"
+        displayName: Define build env variables
+
+      - bash: |
+          set -e
+          echo $BUILD_COMMIT
+          pip install virtualenv wheel
+          BUILD_DEPENDS="$CYTHON_BUILD_DEP"
+
+          source multibuild/common_utils.sh
+          source multibuild/travis_steps.sh
+          source extra_functions.sh
+
+          # Setup build dependencies
+          before_install
+
+          clean_code $REPO_DIR $BUILD_COMMIT
+          #./patch_code.sh $REPO_DIR
+          build_wheel $REPO_DIR $PLAT
+        displayName: Build wheel
+
+      - bash: |
+          set -e
+          source multibuild/common_utils.sh
+          source multibuild/travis_steps.sh
+          source extra_functions.sh
+          setup_test_venv
+          install_run $PLAT
+          teardown_test_venv
+        displayName: Install wheel and test
+        condition: ne(variables['PLAT'], 'arm64')
+
+      - bash: |
+          echo "##vso[task.prependpath]$CONDA/bin"
+          sudo chown -R $USER $CONDA
+        displayName: Add conda to PATH
+
+      - bash: conda install -q -y anaconda-client
+        displayName: Install anaconda-client
+
+      - bash: |
+          set -e
+          echo uploading wheelhouse/*.whl
+          anaconda -t $MAPPED_ANACONDA_TOKEN upload --force -u $ANACONDA_ORG wheelhouse/*.whl
+          echo "PyPI-style index: https://pypi.anaconda.org/$ANACONDA_ORG/simple"
+        displayName: Upload to anaconda.org (only if secret token is retrieved)
+        env:
+          # secrets must be mapped explicitly 
+          MAPPED_ANACONDA_TOKEN: $(ANACONDA_TOKEN)
+        condition: and(succeeded(), ne(variables['ANACONDA_TOKEN'], ''))
