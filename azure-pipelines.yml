@@ -1,5 +1,5 @@
 trigger:
-- main
+- master
 
 variables:
   BUILD_COMMIT: 5f67bea9e262b8424de4b0a147853724555b098e
