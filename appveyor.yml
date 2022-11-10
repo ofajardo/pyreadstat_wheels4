@@ -9,12 +9,11 @@ environment:
       # ANCONDA_TOKEN must be set in appveyor project settings
 
   matrix:
-    - PYTHON_VERSION: "3.7"
-    #CONDAPATH: 'C:\Miniconda37'
     - PYTHON_VERSION: "3.8"
     #CONDAPATH: 'C:\Miniconda38'
     - PYTHON_VERSION: "3.9"
     - PYTHON_VERSION: "3.10"
+    - PYTHON_VERSION: "3.11"
  
 platform:
   - x64
@@ -59,6 +58,8 @@ install:
   - if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
   - call %CONDAPATH%\Scripts\activate
   # prepare environment with conda
+  - conda config --add channels conda-forge
+  - conda config --set channel_priority strict
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   # create an environment with the appropiate python
