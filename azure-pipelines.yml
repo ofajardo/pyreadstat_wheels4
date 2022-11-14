@@ -21,6 +21,9 @@ jobs:
         py_3.10_64:
           MB_PYTHON_VERSION: "3.10"
           MB_PYTHON_OSX_VER: "10.9"
+        py_3.11_64:
+          MB_PYTHON_VERSION: "3.11"
+          MB_PYTHON_OSX_VER: "11"
         py_3.8_64_arm64:
           MB_PYTHON_VERSION: "3.8"
           MB_PYTHON_OSX_VER: "10.9"
