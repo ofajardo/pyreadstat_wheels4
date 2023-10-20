@@ -24,7 +24,7 @@ jobs:
         py_3.11_64:
           MB_PYTHON_VERSION: "3.11"
           MB_PYTHON_OSX_VER: "11"
-        py_3.11_64:
+        py_3.12_64:
           MB_PYTHON_VERSION: "3.12"
           MB_PYTHON_OSX_VER: "11"
         py_3.8_64_arm64:
@@ -47,7 +47,7 @@ jobs:
           MB_PYTHON_OSX_VER: "11"
           PLAT: arm64
           MACOSX_DEPLOYMENT_TARGET: "11.0"
-        py_3.11_64_arm64:
+        py_3.12_64_arm64:
           MB_PYTHON_VERSION: "3.12"
           MB_PYTHON_OSX_VER: "11"
           PLAT: arm64
@@ -70,7 +70,7 @@ jobs:
         py_3.11_64manylinux1:
           MB_PYTHON_VERSION: "3.11"
           MB_ML_VER: "2014"
-        py_3.11_64manylinux1:
+        py_3.12_64manylinux1:
           MB_PYTHON_VERSION: "3.12"
           MB_ML_VER: "2014"
 
@@ -99,7 +99,7 @@ jobs:
           MB_ML_VER: "2014"
           PLAT: "aarch64"
           DOCKER_TEST_IMAGE: "multibuild/focal_{PLAT}"
-        py_3.11_aarch64manylinux2014:
+        py_3.12_aarch64manylinux2014:
           MB_PYTHON_VERSION: "3.12"
           MB_ML_VER: "2014"
           PLAT: "aarch64"
