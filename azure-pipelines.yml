@@ -10,14 +10,8 @@ jobs:
   - template: azure/posix.yml
     parameters:
       name: macOS
-      vmImage: macOS-12
+      vmImage: macOS-13
       matrix:
-        py_3.8_64:
-          MB_PYTHON_VERSION: "3.8"
-          MB_PYTHON_OSX_VER: "10.9"
-        py_3.9_64:
-          MB_PYTHON_VERSION: "3.9"
-          MB_PYTHON_OSX_VER: "10.9"
         py_3.10_64:
           MB_PYTHON_VERSION: "3.10"
           MB_PYTHON_OSX_VER: "10.9"
@@ -30,16 +24,6 @@ jobs:
         py_3.13_64:
           MB_PYTHON_VERSION: "3.13"
           MB_PYTHON_OSX_VER: "11"
-        py_3.8_64_arm64:
-          MB_PYTHON_VERSION: "3.8"
-          MB_PYTHON_OSX_VER: "10.9"
-          PLAT: arm64
-          MACOSX_DEPLOYMENT_TARGET: "11.0"
-        py_3.9_64_arm64:
-          MB_PYTHON_VERSION: "3.9"
-          MB_PYTHON_OSX_VER: "10.9"
-          PLAT: arm64
-          MACOSX_DEPLOYMENT_TARGET: "11.0"
         py_3.10_64_arm64:
           MB_PYTHON_VERSION: "3.10"
           MB_PYTHON_OSX_VER: "11"
@@ -66,12 +50,6 @@ jobs:
       name: linux
       vmImage: ubuntu-20.04
       matrix:
-        py_3.8_64manylinux1:
-          MB_PYTHON_VERSION: "3.8"
-          MB_ML_VER: "2014"
-        py_3.9_64manylinux1:
-          MB_PYTHON_VERSION: "3.9"
-          MB_ML_VER: "2014"
         py_3.10_64manylinux1:
           MB_PYTHON_VERSION: "3.10"
           MB_ML_VER: "2014"
@@ -90,16 +68,6 @@ jobs:
       name: linuxaarch64
       vmImage: ubuntu-20.04
       matrix:
-        py_3.8_aarch64manylinux2014:
-          MB_PYTHON_VERSION: "3.8"
-          MB_ML_VER: "2014"
-          PLAT: "aarch64"
-          DOCKER_TEST_IMAGE: "multibuild/focal_{PLAT}"
-        py_3.9_aarch64manylinux2014:
-          MB_PYTHON_VERSION: "3.9"
-          MB_ML_VER: "2014"
-          PLAT: "aarch64"
-          DOCKER_TEST_IMAGE: "multibuild/focal_{PLAT}"
         py_3.10_aarch64manylinux2014:
           MB_PYTHON_VERSION: "3.10"
           MB_ML_VER: "2014"

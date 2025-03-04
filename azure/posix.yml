@@ -87,8 +87,17 @@ jobs:
         condition: ne(variables['PLAT'], 'arm64')
 
       - bash: |
-          echo "##vso[task.prependpath]$CONDA/bin"
-          sudo chown -R $USER $CONDA
+          if [ `uname` == 'Darwin' ]; then
+            mkdir -p ~/miniconda
+            curl https://repo.anaconda.com/miniconda/Miniconda3-py39_24.5.0-0-MacOSX-x86_64.sh -o ~/miniconda/miniconda.sh
+            bash ~/miniconda/miniconda.sh -b -u -p ~/miniconda
+            rm ~/miniconda/miniconda.sh
+            ~/miniconda/bin/conda init bash
+            echo "##vso[task.prependpath]~/miniconda/bin"
+          else
+            echo "##vso[task.prependpath]$CONDA/bin"
+            sudo chown -R $USER $CONDA
+          fi
         displayName: Add conda to PATH
 
       - bash: conda install -q -y anaconda-client

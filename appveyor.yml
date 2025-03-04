@@ -9,9 +9,6 @@ environment:
       # ANCONDA_TOKEN must be set in appveyor project settings
 
   matrix:
-    - PYTHON_VERSION: "3.8"
-    #CONDAPATH: 'C:\Miniconda38'
-    - PYTHON_VERSION: "3.9"
     - PYTHON_VERSION: "3.10"
     - PYTHON_VERSION: "3.11"
     - PYTHON_VERSION: "3.12"
@@ -71,11 +68,7 @@ install:
   - python --version
   - python -c "import struct; print(struct.calcsize('P') * 8)"
   # install necessary packages
-  #- conda install -q setuptools pip cython wheel
   - pip install cython setuptools
-  #- conda install -c conda-forge libpython
-  # mingw64 toolchain to compile python extensions
-  #- conda install -q -c msys2 m2w64-toolchain
   
 build_script:
   - cd pyreadstat
