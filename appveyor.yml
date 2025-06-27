@@ -9,10 +9,10 @@ environment:
       # ANCONDA_TOKEN must be set in appveyor project settings
 
   matrix:
-    - PYTHON_VERSION: "3.10"
-    - PYTHON_VERSION: "3.11"
-    - PYTHON_VERSION: "3.12"
     - PYTHON_VERSION: "3.13"
+    #- PYTHON_VERSION: "3.10"
+    #- PYTHON_VERSION: "3.11"
+    #- PYTHON_VERSION: "3.12"
  
 platform:
   - x64
@@ -26,6 +26,9 @@ matrix:
       PYTHON_VERSION: "3.10"
 
 install:
+  - curl -O https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-Windows-x86_64.exe
+  - dir
+  - start /wait "" Miniforge3-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniforge3
   - git submodule update --init
   - cd pyreadstat
   - git fetch origin
@@ -53,14 +56,14 @@ install:
   # activate conda base environment
   #- if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
   # use conda37 for everything and later create a conda env with version
-  - set CONDAPATH=C:\Miniconda38
-  - if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
+  - set CONDAPATH=%UserProfile%\Miniforge3
+    #- if "%PLATFORM%" == "x64" set CONDAPATH=%CONDAPATH%-x64
   - call %CONDAPATH%\Scripts\activate
   # prepare environment with conda
-  - conda config --add channels conda-forge
-  - conda config --set channel_priority strict
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
+  #- conda config --add channels conda-forge
+  #- conda config --set channel_priority strict
+  #- conda config --set always_yes yes --set changeps1 no
+  #- conda update -q conda
   # create an environment with the appropiate python
   - conda create -y -n currentenv python=%PYTHON_VERSION%
   - conda activate currentenv
