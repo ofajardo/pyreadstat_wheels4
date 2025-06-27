@@ -28,7 +28,8 @@ matrix:
 install:
   - curl -O https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-Windows-x86_64.exe
   - dir
-  - start /wait "" Miniforge3-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniforge3
+  - Miniforge3-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniforge3
+    #- start /wait "" Miniforge3-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniforge3
   - git submodule update --init
   - cd pyreadstat
   - git fetch origin
