@@ -31,6 +31,9 @@ install:
         Invoke-WebRequest https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-Windows-x86_64.exe -OutFile miniforge.exe
         Start-Process -FilePath "miniforge.exe" -ArgumentList "/NoRegistry=1","/S","/D=$env:MINIFORGE" -Wait
   - cmd: set PATH=%MINIFORGE%;%MINIFORGE%\Scripts;%MINIFORGE%\Library\bin;%PATH%
+  - echo $env
+  - echo %MINIFORGE%
+  - call %MINIFORGE%\Scripts\activate
   - cmd: conda config --set always_yes yes --set changeps1 no --set channel_priority strict
   - cmd: conda update -n base -c conda-forge conda
     #- curl -O https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-Windows-x86_64.exe
