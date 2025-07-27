@@ -12,4 +12,6 @@ function run_tests {
     # Runs tests on installed distribution from an empty directory
     python --version
     python ../pyreadstat/tests/test_basic.py
+    python ../pyreadstat/tests/test_narwhalified.py --backend=pandas
+    python ../pyreadstat/tests/test_narwhalified.py --backend=polars
 }
