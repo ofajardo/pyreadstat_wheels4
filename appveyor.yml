@@ -91,9 +91,9 @@ build_script:
   # do not install pandas with conda because too old version for py35
 
 test_script:
-  python.exe tests\test_basic.py
-  python.exe tests\test_narwhalified.py --backend=pandas
-  python.exe tests\test_narwhalified.py --backend=polars
+  - python.exe tests\test_basic.py
+  - python.exe tests\test_narwhalified.py --backend=pandas
+  - python.exe tests\test_narwhalified.py --backend=polars
 
 after_test:
   # If tests are successful, create binary packages for the project.
