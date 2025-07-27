@@ -12,7 +12,7 @@ jobs:
       PLAT: "x86_64"
       CYTHON_BUILD_DEP: "cython==0.29.24"
       NIGHTLY_BUILD_COMMIT: "master"
-      TEST_DEPENDS: "pandas"
+      TEST_DEPENDS: "pandas narwhals polars-lts-cpu"
       JUNITXML: "test-data.xml"
       TEST_DIR: "tmp_for_test"
     strategy:

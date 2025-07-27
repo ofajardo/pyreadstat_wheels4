@@ -4,7 +4,7 @@ environment:
 
   global:
       # Remember to edit .travis.yml too
-      BUILD_COMMIT: ea9fd7a8ad97b4e5969acf3db020cbab729007ea
+      BUILD_COMMIT: 5060705cf2212ef847439c02e80b4f1be98d7206
       ANACONDA_ORG: ofajardo
       # ANCONDA_TOKEN must be set in appveyor project settings
 
@@ -87,7 +87,7 @@ build_script:
           pip install $_.FullName
       }
   - pip install --pre --no-index --find-links dist/ pyreadstat
-  - pip install pandas
+  - pip install pandas narwhals polars-lts-cpu
   # do not install pandas with conda because too old version for py35
 
 test_script:
