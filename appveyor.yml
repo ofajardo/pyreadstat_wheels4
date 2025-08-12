@@ -87,7 +87,7 @@ build_script:
           pip install $_.FullName
       }
   - pip install --pre --no-index --find-links dist/ pyreadstat
-  - pip install pandas narwhals polars-lts-cpu
+  - pip install pandas narwhals polars # polars-lts-cpu
   # do not install pandas with conda because too old version for py35
 
 test_script:
